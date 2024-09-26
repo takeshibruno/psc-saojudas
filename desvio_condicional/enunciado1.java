@@ -2,7 +2,7 @@ package pratica02.desvio_condicional;
 
 import javax.swing.*;
 
-public class um {
+public class enunciado1 {
     public static void main(String[] args) {
         String input1 = JOptionPane.showInputDialog("Digite o primeiro valor:");
         int valor1 = Integer.parseInt(input1);

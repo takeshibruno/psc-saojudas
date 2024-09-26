@@ -1,7 +1,7 @@
 package pratica02.desvio_condicional_extra;
 import javax.swing.JOptionPane;
 
-public class um {
+public class enunciado1 {
     public static void main(String[] args) {
         double lado1 = Double.parseDouble(JOptionPane.showInputDialog("Digite o primeiro lado:"));
         double lado2 = Double.parseDouble(JOptionPane.showInputDialog("Digite o segundo lado:"));
