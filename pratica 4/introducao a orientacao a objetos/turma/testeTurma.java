@@ -10,7 +10,9 @@ public class testeTurma {
         int serie = Integer.parseInt(JOptionPane.showInputDialog("Insira a serie da Turma: "));
 
         Turma turma = new Turma(nomeTurma, curso, quantidadeAlunos, serie);
+        System.out.println(turma);
 
         serie = Integer.parseInt(JOptionPane.showInputDialog("Insira uma nova serie da Turma: "));
+        System.out.println(turma);
     }
 }
