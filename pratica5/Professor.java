@@ -28,5 +28,10 @@ public class Professor {
     public void setNome(String nome) {
         this.nome = nome;
     }
+
+    @Override
+    public String toString() {
+        return "Nome: " + this.nome + "\nIdade: " + this.idade;
+    }
     
 }

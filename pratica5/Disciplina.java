@@ -19,6 +19,11 @@ public class Disciplina {
 
     public boolean getPratica() {
         return pratica;
-    }   
+    }
+    
+    @Override
+    public String toString() {
+        return "Nome: " + this.nome + "\nPratica: " + this.pratica;
+    }
 
 }
