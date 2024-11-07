@@ -1,5 +1,3 @@
-package pratica5;
-
 public class testeAtribuicao {
     public static void main(String[] args) {
         Professor p = new Professor("Bruno", 22);

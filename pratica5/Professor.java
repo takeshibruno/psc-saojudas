@@ -1,5 +1,3 @@
-package pratica5;
-
 public class Professor {
     private String nome;
     private int idade;

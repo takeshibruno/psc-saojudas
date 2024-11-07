@@ -1,5 +1,3 @@
-package pratica5;
-
 public class Atribuicao {
     private Professor professor;
     private Disciplina disciplina;
