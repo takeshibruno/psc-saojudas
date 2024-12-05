@@ -1,13 +1,20 @@
 package com.company;
 
 import java.awt.*;
+import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.*;
 
 public class Main {
     static ArrayList<Cliente> clientes = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
+        try {
+            conectarBD();
+            System.out.println("conectou");
+        } catch (Exception e) {
+            System.out.println("nao conectou a base de dados" + e.getMessage());
+        }
 
         criandoFrame();
 
@@ -44,9 +51,21 @@ public class Main {
 
         JLabel label2 = new JLabel();
         JButton alterarCliente = new JButton("Alterar dados Cliente");
+        alterarCliente.addActionListener(e -> {
+            int codigo = identificarCliente();
+            String campo = JOptionPane.showInputDialog("Insira o campo que voce quer alterar deste cliente: ");
+            String valor = JOptionPane.showInputDialog("Insira o valor novo que voce quer assimilar a este campo: ");
+
+            alter(codigo, valor, campo);
+        });
 
         JLabel label3 = new JLabel();
         JButton remover_cliente = new JButton("Remover Cliente");
+        remover_cliente.addActionListener(e -> {
+            int codigo = identificarCliente();
+            remove(codigo);
+        });
+
 
         JLabel label4 = new JLabel();
         JButton consultar_cliente = new JButton("Consultar Dados de um Cliente");
@@ -56,7 +75,8 @@ public class Main {
             if (codigoCliente < clientes.size()) {
                 JOptionPane.showMessageDialog(null, "Cliente nao existe na base de dados!");
             } else {
-                JOptionPane.showMessageDialog(null, "Dados do cliente: " + clientes.get(codigoCliente - 1));
+                String dados = read(codigoCliente);
+                JOptionPane.showMessageDialog(null, "Dados do cliente: " + dados);
             }
         });
 
@@ -125,10 +145,8 @@ public class Main {
             Cliente cliente = new Cliente(nome.getText(), senha.getText(), email.getText(), telefone.getText());
             clientes.add(cliente);
 
+            create(cliente);
             JOptionPane.showMessageDialog(null, "Cliente cadastrado com sucesso!");
-            for (Cliente c : clientes) {
-                System.out.println(c);
-            }
 
             nome.setText("");
             senha.setText("");
@@ -156,6 +174,91 @@ public class Main {
         frame.add(formPanel, BorderLayout.CENTER);
 
         return frame;
+    }
+
+    public static Connection conectarBD() throws SQLException {
+        String url = "jdbc:mysql://localhost:3306/teste";
+        String user = "bruno";
+        String senha = "admin";
+
+        return DriverManager.getConnection(url, user, senha);
+    }
+
+    public static void create(Cliente cliente) {
+        String sql = "INSERT INTO clientes (codigoCliente, nome, senha, email, telefone) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = conectarBD(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, cliente.getCodigoCliente()); //
+            pstmt.setString(2, cliente.getNome());
+            pstmt.setString(3, cliente.getSenha());
+            pstmt.setString(4, cliente.getEmail());
+            pstmt.setString(5, cliente.getTelefone());
+
+            pstmt.executeUpdate();
+            System.out.println("Cliente salvo com sucesso!");
+        } catch (SQLException e) {
+            System.out.println("nao foi pra bd");
+            e.getMessage();
+        }
+    }
+
+    public static String read(int codigo) {
+        String sql = "SELECT * FROM clientes WHERE codigoCliente = ?";
+
+        try (Connection conn = conectarBD(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, codigo);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String nome = rs.getString("nome");
+                    String senha = rs.getString("senha");
+                    String email = rs.getString("email");
+                    String telefone = rs.getString("telefone");
+
+                    return "Cliente{codigoCliente=" + codigo + ", nome='" + nome + "', email='" + email + "', telefone='" + telefone + "', senha='" + senha +"'}";
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return "";
+    }
+
+    public static void remove (int codigo) {
+        String sql = "DELETE FROM clientes WHERE codigoCliente = ?";
+
+        try (Connection conn = conectarBD(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, codigo);
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Cliente excluido com sucesso!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Cliente não encontrado!");
+            }
+        } catch (SQLException e) {
+            e.getMessage();
+        }
+    }
+
+    public static void alter (int codigo, String dado, String campo) {
+        String sql = "UPDATE clientes SET " + campo + " = ? WHERE codigoCliente = ?";
+
+        try (Connection conn = conectarBD(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, dado);
+            pstmt.setInt(2, codigo);
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Campo alterado com sucesso!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Falha ao alterar o campo");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 
